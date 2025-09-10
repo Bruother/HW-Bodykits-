@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hot Wheels Body Kits</title>
+</head>
+<body>
+  <h1>Hot Wheels Body Kits</h1>
+
+  <h2>400Z Kit</h2>
+  <img src="images/kit-400z.jpg" alt="400Z Body Kit" width="400">
+
+  <h2>Supra MK4 Kit</h2>
+  <img src="images/kit-supra-mk4.jpg" alt="Supra Body Kit" width="400">
+
+  <h2>AMG GT Kit</h2>
+  <img src="images/kit-amg-gt.jpg" alt="AMG GT Body Kit" width="400">
+
+  <h2>RX-7 Kit</h2>
+  <img src="images/kit-rx7.jpg" alt="RX-7 Body Kit" width="400">
+</body>
+</html>
