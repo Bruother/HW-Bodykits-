@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hot Wheels Body Kits</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #111;
+      color: #fff;
+    }
+    header {
+      background: linear-gradient(90deg, #ff0000, #ff7f00);
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      text-transform: uppercase;
+    }
+    nav {
+      background: #222;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    nav a:hover {
+      color: #ff7f00;
+    }
+    .hero {
+      text-align: center;
+      padding: 50px 20px;
+      background: url('https://i.imgur.com/mjJ4fAr.jpg') no-repeat center center/cover;
+      color: yellow;
+      font-size: 2em;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px black;
+    }
+    .content {
+      padding: 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #222;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255,0,0,0.6);
+    }
+    .card img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    .card h3 {
+      margin: 15px 0 10px;
+      color: #ff4500;
+    }
+    .card p {
+      font-size: 0.9em;
+      color: #ccc;
+    }
+    .buttons {
+      margin-top: 15px;
+    }
+    .buttons button {
+      background: #ff4500;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .buttons button:hover {
+      background: #ff7f00;
+    }
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #111;
+      border-top: 2px solid #ff0000;
+      margin-top: 20px;
+    }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      color: #000;
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+      text-align: center;
+      position: relative;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Hot Wheels Body Kits</h1>
+    <p>Speed • Style • Performance</p>
+  </header>
+
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Kits</a>
+    <a href="#">Gallery</a>
+    <a href="#">Contact</a>
+  </nav>
+
+  <div class="hero">
+    Custom Body Kits for Your Hot Wheels Collection!
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <img src="images/kit-400z.jpg" alt="Wide-Body Hot Wheels 400Z Kit">
+      <h3>Wide-Body 400Z Kit</h3>
+      <p>Sharp, bold styling with plenty of flair.</p>
+      <div class="buttons">
+        <button onclick="openLearn('Wide-Body 400Z Kit', 'This kit adds aggressive fender flares and street styling to your Hot Wheels 400Z.')">Learn More</button>
+        <button onclick="openBuy('Wide-Body 400Z Kit')">Buy Now</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="images/kit-supra-mk4.jpg" alt="Supra MK4 Kit">
+      <h3>Supra MK4 Body Kit</h3>
+      <p>Perfect for turbo builds that demand presence.</p>
+      <div class="buttons">
+        <button onclick="openLearn('Supra MK4 Body Kit', 'Classic JDM style with wide arches and bold aero parts.')">Learn More</button>
+        <button onclick="openBuy('Supra MK4 Body Kit')">Buy Now</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="images/kit-amg-gt.jpg" alt="Mercedes-Benz AMG GT Kit">
+      <h3>AMG GT Kit</h3>
+      <p>Premium, sleek, and full of attitude.</p>
+      <div class="buttons">
+        <button onclick="openLearn('AMG GT Kit', 'Luxury meets speed with this custom Hot Wheels AMG GT body kit.')">Learn More</button>
+        <button onclick="openBuy('AMG GT Kit')">Buy Now</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="images/kit-rx7.jpg" alt="Mazda RX-7 Kit">
+      <h3>RX-7 Kit</h3>
+      <p>Spot-on detail for rotary lovers.</p>
+      <div class="buttons">
+        <button onclick="openLearn('RX-7 Kit', 'Built for drift enthusiasts, this kit gives your RX-7 a race-ready look.')">Learn More</button>
+        <button onclick="openBuy('RX-7 Kit')">Buy Now</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Hot Wheels Body Kits Project</p>
+  </footer>
+
+  <!-- Buy Modal -->
+  <div class="modal" id="buyModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('buyModal')">&times;</span>
+      <h2 id="buyTitle">Buy Kit</h2>
+      <p>This is a school project demo. Checkout not available.</p>
+    </div>
+  </div>
+
+  <!-- Learn More Modal -->
+  <div class="modal" id="learnModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('learnModal')">&times;</span>
+      <h2 id="learnTitle">Learn More</h2>
+      <p id="learnText"></p>
+    </div>
+  </div>
+
+  <script>
+    function openBuy(title) {
+      document.getElementById('buyTitle').textContent = "Buy " + title;
+      document.getElementById('buyModal').style.display = "flex";
+    }
+    function openLearn(title, text) {
+      document.getElementById('learnTitle').textContent = title;
+      document.getElementById('learnText').textContent = text;
+      document.getElementById('learnModal').style.display = "flex";
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
