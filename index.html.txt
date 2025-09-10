@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Hot Wheels Body Kits — 200,000 Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --bg: #0b0b0b;
+      --card: #151515;
+      --accent: #ff4500;
+      --text: #fff;
+      --muted: #aaa;
+      --card-h: 140px; /* card height used for virtualization calculations */
+    }
+    body {
+      margin:0;
+      font-family: Inter, Arial, sans-serif;
+      background: linear-gradient(180deg,#050505,#0f0f0f);
+      color: var(--text);
+    }
+    header {
+      padding:18px 20px;
+      background: linear-gradient(90deg,#ff0000,#ff7f00);
+      text-align:center;
+      box-shadow:0 5px 18px rgba(0,0,0,0.6);
+    }
+    header h1 { margin:0; font-size:1.4rem; letter-spacing:1px; text-transform:uppercase; }
+    .controls {
+      display:flex; gap:8px; padding:10px 14px; align-items:center; justify-content:center;
+      background:#111; border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .controls input[type="number"], .controls input[type="text"], .controls button {
+      padding:6px 8px; border-radius:6px; border:1px solid #333; background:#0f0f0f; color:var(--text);
+    }
+    .controls label { color:var(--muted); margin-right:6px; font-size:0.9rem;}
+    .viewport {
+      height: calc(100vh - 128px);
+      overflow:auto;
+      position:relative;
+      -webkit-overflow-scrolling: touch;
+    }
+    .spacer { width:1px; }
+    .list {
+      position:absolute;
+      left:0; right:0;
+      will-change: transform;
+    }
+    .card {
+      height: calc(var(--card-h));
+      box-sizing:border-box;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:12px;
+      margin:8px 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:10px;
+      border: 1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+    }
+    .thumb {
+      width:180px; height:100%; flex:0 0 180px; border-radius:8px; overflow:hidden;
+      display:flex; align-items:center; justify-content:center; background:#222;
+    }
+    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .meta { flex:1; text-align:left; }
+    .meta h3 { margin:0 0 6px; color:var(--accent); font-size:1.05rem; }
+    .meta p { margin:0; color:var(--muted); font-size:0.92rem; }
+    .footer {
+      padding:12px; text-align:center; color:var(--muted); font-size:0.9rem;
+      border-top:1px solid rgba(255,255,255,0.03);
+    }
+    @media (max-width:640px){
+      .card { flex-direction:row; gap:10px; padding:10px; }
+      .thumb { width:120px; }
+      :root { --card-h: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Hot Wheels Body Kits — Demo (200,000 items)</h1>
+  </header>
+
+  <div class="controls">
+    <label>Show items:</label>
+    <input id="countInput" type="number" min="1000" max="200000" step="1000" value="200000" style="width:110px">
+    <label style="margin-left:8px">Search:</label>
+    <input id="searchInput" type="text" placeholder="e.g. Drift King" style="width:260px">
+    <button id="applyBtn">Apply</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <div id="viewport" class="viewport" tabindex="0" aria-label="Product list viewport">
+    <div id="spacerTop" style="height:0"></div>
+    <div id="list" class="list"></div>
+    <div id="spacerBottom" style="height:0"></div>
+  </div>
+
+  <div class="footer">
+    Only a few dozen DOM elements are rendered at once for smooth browsing. Images are lazy-loaded.
+  </div>
+
+<script>
+(() => {
+  // CONFIG
+  const DEFAULT_TOTAL = 200000;
+  const ITEM_HEIGHT = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h')) || 140;
+  const BUFFER = 12; // render this many extra items above/below
+  let totalItems = DEFAULT_TOTAL;
+  let data = [];
+
+  // DOM
+  const viewport = document.getElementById('viewport');
+  const list = document.getElementById('list');
+  const spacerTop = document.getElementById('spacerTop');
+  const spacerBottom = document.getElementById('spacerBottom');
+  const countInput = document.getElementById('countInput');
+  const searchInput = document.getElementById('searchInput');
+  const applyBtn = document.getElementById('applyBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  // create data array (lightweight objects)
+  function generateData(n) {
+    const out = new Array(n);
+    for (let i = 0; i < n; i++) {
+      const id = i + 1;
+      // small set of kit names for variety
+      const types = ['Street Racer', 'Off-Road', 'Drift King', 'Aero Pro', 'Turbo GT', 'Retro Classic', 'Alien X'];
+      const type = types[(i % types.length)];
+      out[i] = {
+        id,
+        title: `${type} Kit #${id}`,
+        desc: `Custom body kit for scale Hot Wheels car — model ${ (id % 500) + 1 }`,
+        // use seeded placeholder images so each looks different
+        img: `https://picsum.photos/seed/hw-${id}/420/240`
+      };
+    }
+    return out;
+  }
+
+  // render window
+  function render() {
+    const scrollTop = viewport.scrollTop;
+    const viewportHeight = viewport.clientHeight;
+    const itemsPerScreen = Math.ceil(viewportHeight / ITEM_HEIGHT);
+    const startIndex = Math.max(0, Math.floor(scrollTop / ITEM_HEIGHT) - BUFFER);
+    const endIndex = Math.min(data.length - 1, Math.ceil((scrollTop + viewportHeight) / ITEM_HEIGHT) + BUFFER);
+    const topSpacerHeight = startIndex * ITEM_HEIGHT;
+    const bottomSpacerHeight = (data.length - 1 - endIndex) * ITEM_HEIGHT;
+
+    spacerTop.style.height = topSpacerHeight + 'px';
+    spacerBottom.style.height = bottomSpacerHeight + 'px';
+
+    // clear and append only current window nodes
+    list.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    for (let i = startIndex; i <= endIndex; i++) {
+      const item = data[i];
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.setAttribute('data-index', i);
+
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.alt = item.title;
+      img.src = item.img;
+      thumb.appendChild(img);
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const h3 = document.createElement('h3');
+      h3.textContent = item.title;
+      const p = document.createElement('p');
+      p.textContent = item.desc;
+
+      meta.appendChild(h3);
+      meta.appendChild(p);
+
+      card.appendChild(thumb);
+      card.appendChild(meta);
+
+      fragment.appendChild(card);
+    }
+    list.appendChild(fragment);
+
+    // position list using translate to avoid reflow of the spacer heights
+    list.style.transform = `translateY(0px)`;
+  }
+
+  // debounce helper
+  function debounce(fn, wait=50){
+    let t;
+    return (...a)=>{ clearTimeout(t); t = setTimeout(()=>fn(...a), wait); }
+  }
+
+  // initial setup
+  function init(n) {
+    totalItems = n || DEFAULT_TOTAL;
+    data = generateData(totalItems);
+    // give viewport a total scrollable height via spacers
+    spacerTop.style.height = '0px';
+    spacerBottom.style.height = ((data.length - 0) * ITEM_HEIGHT) + 'px';
+    // scroll to top and render
+    viewport.scrollTop = 0;
+    render();
+  }
+
+  // wire scroll
+  viewport.addEventListener('scroll', debounce(render, 20));
+  // keyboard quick nav
+  viewport.addEventListener('keydown', (e) => {
+    if (e.key === 'PageDown') viewport.scrollBy({top: viewport.clientHeight, behavior: 'smooth'});
+    if (e.key === 'PageUp') viewport.scrollBy({top: -viewport.clientHeight, behavior: 'smooth'});
+  });
+
+  // controls
+  applyBtn.addEventListener('click', () => {
+    let desired = parseInt(countInput.value, 10);
+    if (isNaN(desired) || desired < 1) desired = DEFAULT_TOTAL;
+    // if search applied, do a filtered subset
+    const q = searchInput.value.trim().toLowerCase();
+    if (q.length > 0) {
+      // generate full dataset but filter by title/desc (this is demo; for real use you'd query server)
+      const full = generateData(desired);
+      data = full.filter(item => item.title.toLowerCase().includes(q) || item.desc.toLowerCase().includes(q));
+    } else {
+      data = generateData(desired);
+    }
+    // update spacer heights and render
+    spacerTop.style.height = '0px';
+    spacerBottom.style.height = (data.length * ITEM_HEIGHT) + 'px';
+    viewport.scrollTop = 0;
+    render();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    countInput.value = DEFAULT_TOTAL;
+    searchInput.value = '';
+    init(DEFAULT_TOTAL);
+  });
+
+  // Kick off
+  init(DEFAULT_TOTAL);
+
+})();
+</script>
+
+</body>
+</html>
